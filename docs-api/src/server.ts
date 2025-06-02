@@ -11,79 +11,81 @@ const docsPassword = "user";
 app.use(bodyParser.json());
 
 async function createContext(browser) {
-    return browser.newContext({
+    const context = await browser.newContext({
         viewport: { width: 1920, height: 1080 }
     });
+    context.setDefaultTimeout(90000);
+    return context;
 }
 
 app.post('/create', async (req: Request, res: Response) => {
     const data = req.body;
-  
+
     console.log('[DEBUG] /create endpoint received request with payload:', data);
-  
+
     const browser = await chromium.launch();
     const context = await createContext(browser);
-    const page = await context.newPage();  
-    
+    const page = await context.newPage();
+
     // Open the docs home page
     await page.goto(docsBaseUrl);
-  
+
     // Click on "Start Writing"
     await page.waitForSelector('.c__button--primary');
     await page.click('.c__button--primary');
-  
+
     // Wait for the login screen (and type the user)
     await page.waitForSelector("#username");
     await page.locator('#username').fill(docsUser);
-  
-    
+
+
     await page.waitForSelector("#password");
     await page.locator('#password').fill(docsPassword);
-  
+
     // Click on login button
     await page.click("button.pf-m-primary");
-  
+
     // Wait for the "New doc" button
     await page.waitForSelector("[data-testid=\"left-panel-desktop\"] button.c__button--primary");
     await page.click("[data-testid=\"left-panel-desktop\"] button.c__button--primary");
-  
+
     // Wait for the document name inpout
     await page.waitForSelector('[aria-label="doc title input"]');
     await page.locator('[aria-label="doc title input"]').fill(data.name);
-  
+
     // Click on content area
     await page.click('.bn-block-content');
     await page.waitForSelector('.c__toast__content__children');
-    
+
     // Click on share button
     await page.locator('.fAndy .c__button.c__button--tertiary-text.c__button--medium.c__button--text')
     .nth(0)
     .click();
-  
+
     // Click on Public/Private selector
     await page.locator('.c__modal__content button.--docs--drop-button')
     .last()
     .click();
-  
+
     // Click on Public
     await page.locator('button[role="menuitem"]').last().click();
-  
+
     // Wait for the confirmation message
     await page.waitForSelector('.c__toast__content__children');
-    
+
     // Wait until the Read/Editor selector appears
     await page.waitForFunction((selector) => {
       return document.querySelectorAll(selector).length === 4;
-    }, '.c__modal__content button.--docs--drop-button');  
-  
+    }, '.c__modal__content button.--docs--drop-button');
+
     // Click on Read/Editor selector
     await page.locator('.c__modal__content button.--docs--drop-button')
     .last()
     .click();
-  
+
     // Click on Editor
     await page.locator('button[role="menuitem"]').last().click();
-  
+
     const url = await page.url();
 
     await browser.close();
@@ -106,7 +108,7 @@ app.post('/append', async (req: Request, res: Response) => {
 
     const browser = await chromium.launch();
     const context = await createContext(browser);
-    const page = await context.newPage();  
+    const page = await context.newPage();
 
     // Open the docs home page
     await page.goto(url);
@@ -126,7 +128,7 @@ app.post('/append', async (req: Request, res: Response) => {
             clipboardData: dt,
             bubbles: true,
             cancelable: true,
-            }));      
+            }));
         }, markdownContent
     );
 
