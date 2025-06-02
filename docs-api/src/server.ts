@@ -3,25 +3,30 @@ import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 
 const app = express();
-const port = 3000;
+const port = 3099;
+const docsBaseUrl = "https://docs-hackdays.h.elos.dev/docs/";
+const docsUser = "user";
+const docsPassword = "user";
 
 app.use(bodyParser.json());
+
+async function createContext(browser) {
+    return browser.newContext({
+        viewport: { width: 1920, height: 1080 }
+    });
+}
 
 app.post('/create', async (req: Request, res: Response) => {
     const data = req.body;
   
-    // Do something with the data (e.g., save to DB)
-    console.log('Create endpoint received data:', data);
+    console.log('[DEBUG] /create endpoint received request with payload:', data);
   
     const browser = await chromium.launch();
-    
-    const context = await browser.newContext({
-      viewport: { width: 1920, height: 1080 }
-    });
+    const context = await createContext(browser);
     const page = await context.newPage();  
     
     // Open the docs home page
-    await page.goto('https://docs-hackdays.h.elos.dev/docs/');
+    await page.goto(docsBaseUrl);
   
     // Click on "Start Writing"
     await page.waitForSelector('.c__button--primary');
@@ -29,12 +34,11 @@ app.post('/create', async (req: Request, res: Response) => {
   
     // Wait for the login screen (and type the user)
     await page.waitForSelector("#username");
-    await page.locator('#username').fill('user');
+    await page.locator('#username').fill(docsUser);
   
     
     await page.waitForSelector("#password");
-    await page.locator('#password').fill('user');
-  
+    await page.locator('#password').fill(docsPassword);
   
     // Click on login button
     await page.click("button.pf-m-primary");
@@ -80,48 +84,37 @@ app.post('/create', async (req: Request, res: Response) => {
     // Click on Editor
     await page.locator('button[role="menuitem"]').last().click();
   
-    
     const url = await page.url();
-  
-    await page.screenshot({ path: '/home/tiago/Downloads/teste.png'  });
-  
-  //   // Expect a title "to contain" a substring.
-  //   await expect(page).toHaveTitle(/Playwright/);
-  
-    const title = await page.title();
-  
+
+    await browser.close();
+
     res.status(201).json({
-      message: 'Resource created successfully: ' + title,
+      message: 'Resource created successfully',
       url
     });
-  });
-  
+});
 
-  app.post('/append', async (req: Request, res: Response) => {
+app.post('/append', async (req: Request, res: Response) => {
     const data = req.body;
 
     const {
         url,
         markdownContent
     } = data;
-  
-    // Do something with the data (e.g., save to DB)
-    console.log('Append endpoint received data:', data);
-  
+
+    console.log('[DEBUG] /append endpoint received request with payload:', data);
+
     const browser = await chromium.launch();
-    
-    const context = await browser.newContext({
-      viewport: { width: 1920, height: 1080 }
-    });
+    const context = await createContext(browser);
     const page = await context.newPage();  
-    
+
     // Open the docs home page
-    await page.goto(data.url);
+    await page.goto(url);
 
     // Wait until it's fully loaded
     await page.waitForSelector('.bn-block-content');
     await page.click('.bn-block-content');
-    
+
     await page.evaluate (
         (markdownContent) => {
             const  inputs = document.querySelectorAll('.bn-inline-content');
@@ -136,16 +129,14 @@ app.post('/create', async (req: Request, res: Response) => {
             }));      
         }, markdownContent
     );
-    // await page.waitForSelector('.c__toast__content__children');
-    
-  
+
+    await browser.close();
+
     res.status(201).json({
-      message: 'Content appended successfully',
-      markdownContent
+        message: 'Content appended successfully',
+        markdownContent
     });
-  });
-  
-    
+});
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
