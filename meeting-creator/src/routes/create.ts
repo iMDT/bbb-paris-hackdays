@@ -3,6 +3,6 @@ import createController from '../controllers/createController';
 
 const router = Router();
 
-router.all('/', createController.handlePluginRequest);
+router.all('/', createController.handleRequest);
 
 export default router;

@@ -1,13 +1,10 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
-import { PluginCache } from '../models/pluginCache';
-import { PluginRegistry } from '../models/pluginRegistry';
 import logger from '../utils/logger';
-import crypto from "crypto";
 const serverSecuritySalt = require('../serverSecuritySalt');
 
 class CreateController {
-    async handlePluginRequest(req: Request, res: Response) {
+    async handleRequest(req: Request, res: Response) {
         logger.info(`---------------New request received: ${req.path}`);
 
         console.log('Query received:', req.query);

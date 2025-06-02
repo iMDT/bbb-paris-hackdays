@@ -1,5 +1,5 @@
 [Unit]
-Description=BigBlueButton Plugin Server
+Description=BigBlueButton Create with Docs Server
 After=syslog.target network.target
 PartOf=bigbluebutton.target
 StartLimitIntervalSec=0
