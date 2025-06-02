@@ -1,22 +1,55 @@
+# Development Setup
 
-# Development run
+To start the project locally:
 
-```sh
+```bash
 npm install
 npm start
 ```
 
-# Sample requests
+---
 
-## Create a document
+# Sample Requests
 
-```sh
-curl -X POST http://localhost:3000/create -H 'Content-type: application/json' -d '{"name": "Teste 17:24"}'
+## 1. Create a Document
+
+### Request
+
+```bash
+curl -X POST http://localhost:3000/create \
+  -H 'Content-Type: application/json' \
+  -d '{"name": "Teste 17:24"}'
 ```
 
-## Append content to a document
+### Response
 
-```sh
-curl -X POST http://localhost:3000/append -H 'Content-type: application/json' -d '{"url": "https://docs-hackdays.h.elos.dev/docs/94cc77c6-d529-4a34-b665-597e3e38c057/", "markdownContent": "# Oi\n## Tchau\nTeste\n"}'
+```json
+{
+  "message": "Resource created successfully",
+  "url": "https://server/docs/75586e8d-23ed-4545-b183-0a1485891df7/"
+}
 ```
 
+---
+
+## 2. Append Content to a Document
+
+### Request
+
+```bash
+curl -X POST http://localhost:3000/append \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "url": "https://server/docs/75586e8d-23ed-4545-b183-0a1485891df7/",
+    "markdownContent": "# Hello\n## Paris\nHello Paris!\n"
+  }'
+```
+
+### Response
+
+```json
+{
+  "message": "Content appended successfully",
+  "markdownContent": "# Hello\n## Paris\nHello Paris!\n"
+}
+```
