@@ -83,7 +83,7 @@ app.post('/create', async (req: Request, res: Response) => {
     
     const url = await page.url();
   
-    await page.screenshot({ path: '/home/tiago/Downloads/teste.png'  });
+    // await page.screenshot({ path: '/home/tiago/Downloads/teste.png'  });
   
   //   // Expect a title "to contain" a substring.
   //   await expect(page).toHaveTitle(/Playwright/);
