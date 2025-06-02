@@ -2,19 +2,21 @@
 
 ## Description
 
-A brief description of the plugin including a screenshot and/or a short video.
+This is the code for the official BigBlueButton plugin integration for [La Suite numérique Docs](https://github.com/suitenumerique/docs). It encapsulates the docs into a BigBlueButton sidebar component, and it is possible to move it to the main area. See demo ahead:
+
+![Demo video for integration with la suite numérique docs](assets/docs_integration_in_bbb30.mp4)
 
 ## Building the Plugin
 
 To build the plugin for production use, follow these steps:
 
 ```bash
-cd $HOME/src/plugin-template
+cd bbb-paris-hackdays/bbb-plugin-la-suite-numerique-docs
 npm ci
 npm run build-bundle
 ```
 
-The above command will generate the `dist` folder, containing the bundled JavaScript file named `<plugin-name>.js`. This file can be hosted on any HTTPS server along with its `manifest.json`.
+The above command will generate the `dist` folder, containing the bundled JavaScript file named `BbbPluginLaSuiteNumeriqueDocs.js`. This file can be hosted on any HTTPS server along with its `manifest.json`.
 
 If you install the Plugin separated to the manifest, remember to change the `javascriptEntrypointUrl` in the `manifest.json` to the correct endpoint.
 
