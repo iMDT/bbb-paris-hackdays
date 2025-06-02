@@ -2,7 +2,9 @@
   "name": "docs-api",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "start": "./node_modules/.bin/nodemon src/server.ts || npx ts-node src/server.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

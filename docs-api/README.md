@@ -3,7 +3,7 @@
 
 ```sh
 npm install
-./node_modules/.bin/nodemon src/server.ts npx ts-node src/server.ts
+npm start
 ```
 
 # Sample requests
