@@ -1,3 +1,11 @@
+# Requirement
+
+```
+sudo npx playwright install
+sudo npx playwright install-deps
+```
+
+
 # Development Setup
 
 To start the project locally:

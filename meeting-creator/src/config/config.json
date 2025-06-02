@@ -1,0 +1,6 @@
+{
+  "log_level": "info",
+  "server_host": "127.0.0.1",
+  "server_port": 8095,
+  "server_request_max_body_size": 10485760
+}
