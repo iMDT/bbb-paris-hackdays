@@ -1,0 +1,18 @@
+[Unit]
+Description=BigBlueButton Plugin Server
+After=syslog.target network.target
+PartOf=bigbluebutton.target
+StartLimitIntervalSec=0
+
+[Service]
+WorkingDirectory=/usr/local/bbb-meeting-creator
+ExecStart=/usr/bin/node bbb-meeting-creator.js
+Restart=always
+SyslogIdentifier=bbb-meeting-creator
+User=bigbluebutton
+Group=bigbluebutton
+Environment=NODE_ENV=production
+RestartSec=1s
+
+[Install]
+WantedBy=multi-user.target bigbluebutton.target
