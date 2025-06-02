@@ -1,0 +1,13 @@
+{
+  "requiredSdkVersion": "~0.0.73",
+  "name": "BbbPluginLaSuiteNumeriqueDocs",
+  "javascriptEntrypointUrl": "BbbPluginLaSuiteNumeriqueDocs.js?docsUrl=${meta_docs-document-url}",
+  "localesBaseUrl": "locales",
+  "dataChannels": [
+      {
+          "name": "",
+          "pushPermission": ["moderator"],
+          "replaceOrDeletePermission": ["creator", "moderator"]
+      }
+  ]
+}
