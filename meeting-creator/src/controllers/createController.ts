@@ -14,6 +14,7 @@ class CreateController {
         const params = new URLSearchParams({});
 
 
+        /*
         const docsResponse = await axios.post('http://localhost:3099/create', {
             name: meetingName
         });
@@ -24,8 +25,10 @@ class CreateController {
             logger.info(`Docs created ${docsResponse.data.url}.`);
             params.set('meta_docs-document-url', docsResponse.data.url);
         }
+         */
 
-
+        const myMeetingUrl = 'https://docs-hackdays.h.elos.dev/docs/99152e4b-36f7-4462-b358-3720beed9434/';
+        params.set('meta_docs-document-url', myMeetingUrl);
 
         for(let param in req.query) {
             if(param == 'checksum') continue;
