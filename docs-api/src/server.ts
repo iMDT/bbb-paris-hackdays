@@ -113,12 +113,16 @@ app.post('/append', async (req: Request, res: Response) => {
     // Open the docs home page
     await page.goto(url);
 
-    // Wait until it's fully loaded
+    // Wait until it's loaded
     await page.waitForSelector('.bn-block-content');
-    await page.click('.bn-block-content');
-    await page.focus('.bn-block-content');
 
+    // Wait a bit more
     await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Click on last content
+    await page.locator('.bn-block-content').last().click();
+    await page.locator('.bn-block-content').last().focus();
+
     
     if(markdownContent) {
         await page.evaluate (
@@ -126,7 +130,7 @@ app.post('/append', async (req: Request, res: Response) => {
                 const inputs = document.querySelectorAll('.bn-inline-content');
                 const input = inputs[inputs.length-1];
                 const dt = new DataTransfer();
-                dt.setData('text/plain', markdownContent);
+                dt.setData('text/plain', " " + markdownContent);
                 // @ts-ignore
                 input.focus();
                 input.dispatchEvent(new ClipboardEvent('paste', {
@@ -218,6 +222,6 @@ async function createBrowser() {
       ]
     });
 
-    browser.setDefaultTimeout(90000);
+    browser.setDefaultTimeout(600000);
     return browser;
 }
