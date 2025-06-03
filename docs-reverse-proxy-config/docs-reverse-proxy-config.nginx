@@ -1,0 +1,107 @@
+# /etc/nginx/sites-enabled/default
+
+# This reverse proxies docs access allowing it to be embeded into an iframe
+# Docs server: docs-hackdays.h.elos.dev
+# Reverse proxy (this host): docs-rp.bbb.imdt.dev
+
+#
+# ------------------------------------------------------------------
+# 1. Redirect ALL plain-HTTP traffic to HTTPS
+# ------------------------------------------------------------------
+#
+server {
+    listen       80;
+    listen       [::]:80;
+    server_name  docs-rp.bbb.imdt.dev;
+
+    return 301 https://$host$request_uri;
+}
+
+#
+# ------------------------------------------------------------------
+# 2. HTTPS reverse proxy  (TLS • HTTP/2 • WebSockets • headers, …)
+# ------------------------------------------------------------------
+#
+
+# --- Location-header rewriting helper --------------------------------
+map $upstream_http_location $fixed_location {
+    "~^docs-hackdays\.h\.elos\.dev(?<rest>.*)$"  "docs-rp.bbb.imdt.dev$rest";
+    default                                      $upstream_http_location;
+}
+
+server {
+    listen       443 ssl http2;
+    listen       [::]:443 ssl http2;
+    server_name  docs-rp.bbb.imdt.dev;
+
+    # --- TLS ----------------------------------------------------------
+    ssl_certificate     /etc/letsencrypt/live/docs-rp.bbb.imdt.dev/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/docs-rp.bbb.imdt.dev/privkey.pem;
+    include             /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+
+    # --- Reverse-proxy everything ------------------------------------
+    location / {
+
+        # Forward every request (incl. /docs/) to the upstream
+        proxy_pass https://docs-hackdays.h.elos.dev;
+
+        # WebSocket support
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+
+        # Preserve original request details
+        proxy_set_header   Host              docs-hackdays.h.elos.dev;
+        proxy_set_header   Origin            https://docs-hackdays.h.elos.dev;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+
+        # Upstream is HTTPS → send SNI so cert verification succeeds
+        proxy_ssl_server_name on;
+        proxy_ssl_name docs-hackdays.h.elos.dev;        # for TLS
+
+        # --- Response rewriting (substitution filter) -----------------
+        # 1. Ensure responses arrive un-compressed (needed for sub_filter)
+        proxy_set_header   Accept-Encoding "";
+
+        # 2. Replace every occurrence of the upstream hostname
+        sub_filter        'docs-hackdays.h.elos.dev' 'docs-rp.bbb.imdt.dev';
+        sub_filter_once   off;   # replace every match, not just first
+
+        # 3. Apply filter to common text-based MIME types
+        sub_filter_types  text/plain application/json ;
+	
+        # Rewrite absolute redirects sent by the app
+        proxy_redirect    https://docs-hackdays.h.elos.dev/ https://docs-rp.bbb.imdt.dev/; 
+
+        # --- Location-header rewriting using the map above ------------
+        proxy_hide_header Location;   # strip upstream Location
+        add_header        Location $fixed_location;
+    }
+
+    #
+    # ------------------------------------------------------------------
+    # 3. Aggressive client-side caching for static assets
+    #    (365 days • immutable)  — adjust the pattern to match your build
+    # ------------------------------------------------------------------
+    #
+    location ~* \.(?:css|js|mjs|map|woff2?|ttf|eot|svg|gif|png|jpe?g|ico)$ {
+        # 1 year →  365 d × 24 h × 60 m × 60 s  =  31 536 000 s
+        expires             365d;
+        add_header          Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    #
+    # ------------------------------------------------------------------
+    # 4. Short-lived caching for rendered HTML
+    #    (protects against “over-caching” live docs)
+    # ------------------------------------------------------------------
+    #
+    location ~* \.(?:html)$ {
+        expires             30s;                       # or ‘0’ to disable
+        add_header          Cache-Control "public, max-age=30";
+    }
+
+}
