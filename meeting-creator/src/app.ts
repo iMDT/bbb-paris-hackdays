@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json({ limit: config.get("server_request_max_body_size") }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/', createRoutes);
+app.use('/create', createRoutes);
 
 
 const startServer = () => {
