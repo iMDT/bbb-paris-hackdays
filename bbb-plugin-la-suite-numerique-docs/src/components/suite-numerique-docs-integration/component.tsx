@@ -6,6 +6,9 @@ import {
   GenericContentMainArea,
   PluginApi,
   GenericContentSidekickArea,
+  PresentationWhiteboardUiDataNames,
+  PresentationToolbarButton,
+  pluginLogger,
 } from 'bigbluebutton-html-plugin-sdk';
 
 import GenericComponentLinkShare from '../generic-component/component';
@@ -19,6 +22,50 @@ function SuiteNumeriqueDocsIntegration(
   BbbPluginSdk.initialize(uuid);
   const [documentUrl, setDocumentUrl] = useState('');
   const pluginApi: PluginApi = BbbPluginSdk.getPluginApi(uuid);
+  const { data: presentationInformation } = pluginApi.useCurrentPresentation();
+
+  const appendData = async (base64Content: string, url: string) => {
+    const response = await fetch('https://hackdays-docs-bbb.bbb.imdt.dev/append', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url,
+        pngBase64: base64Content,
+      }),
+    });
+    if (!response.ok) {
+      pluginLogger.error('Failed to append data:', response.statusText);
+      return;
+    }
+
+    const data = await response.json();
+    pluginLogger.info('Append response:', data);
+  };
+
+  useEffect(() => {
+    if (presentationInformation
+      && presentationInformation?.currentPage?.urlsJson?.png
+      && documentUrl) {
+      const currentObjectToSendToClient = new PresentationToolbarButton({
+        label: 'Get the snapshot of current slide.',
+        tooltip: 'The content will be shown in the console.',
+        style: {},
+        onClick: () => {
+          pluginApi.getUiData(
+            PresentationWhiteboardUiDataNames.CURRENT_PAGE_SNAPSHOT,
+          ).then((pngDataResult) => {
+            appendData(pngDataResult.base64Png, documentUrl);
+            pluginLogger.info('Here is the base64', pngDataResult);
+          }).catch((err) => {
+            pluginLogger.error('Ops, something went wrong when getting the snapshot', err);
+          });
+        },
+      });
+      pluginApi.setPresentationToolbarItems([currentObjectToSendToClient]);
+    }
+  }, [presentationInformation, documentUrl]);
 
   const renderDocsInArea = (area: DOCS_AREA, open: boolean) => {
     if (area === DOCS_AREA.MAIN_AREA) {
