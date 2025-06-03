@@ -1,0 +1,5 @@
+docsBaseUrl:
+docsUser:
+docsPassword:
+chromeUserDataDir: "/tmp/bbb-docs-api-chrome-userdata/"
+port: 3099
