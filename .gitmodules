@@ -1,0 +1,3 @@
+[submodule "bbb-playback-transcript"]
+	path = bbb-playback-transcript
+	url = git@github.com:bigbluebutton/bbb-playback-transcript.git
