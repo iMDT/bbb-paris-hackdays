@@ -56,7 +56,8 @@ function SuiteNumeriqueDocsIntegration(
           pluginApi.getUiData(
             PresentationWhiteboardUiDataNames.CURRENT_PAGE_SNAPSHOT,
           ).then((pngDataResult) => {
-            appendData(pngDataResult.base64Png, documentUrl);
+            const dataToSend = pngDataResult.base64Png.replace('data:image/png;base64,', '');
+            appendData(dataToSend, documentUrl);
             pluginLogger.info('Here is the base64', pngDataResult);
           }).catch((err) => {
             pluginLogger.error('Ops, something went wrong when getting the snapshot', err);
