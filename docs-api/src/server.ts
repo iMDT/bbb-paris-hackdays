@@ -16,7 +16,7 @@ if(!fs.existsSync(chromeUserDataDir)) {
     console.log('[DEBUG] Creating Chrome user data directory...');
     fs.mkdirSync(chromeUserDataDir);
 }
-
+app.use(express.json({ limit: 10485760 }));
 app.use(bodyParser.json());
 
 app.post('/create', async (req: Request, res: Response) => {
@@ -120,7 +120,7 @@ app.post('/append', async (req: Request, res: Response) => {
 
     const start = Date.now();
     const browser = await createBrowser();
-    const page = await browser.newPage();  
+    const page = await browser.newPage();
     console.log('[DEBUG] Browser and page initialized');
 
     console.log('[DEBUG] Navigating to document URL');
