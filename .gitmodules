@@ -1,3 +1,0 @@
-[submodule "bbb-playback-transcript"]
-	path = post-meeting-processor/bbb-playback-transcript
-	url = git@github.com:bigbluebutton/bbb-playback-transcript.git
