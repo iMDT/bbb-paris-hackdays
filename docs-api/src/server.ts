@@ -116,7 +116,7 @@ app.post('/append', async (req: Request, res: Response) => {
 
     const start = Date.now();
     const browser = await createBrowser();
-    const page = await browser.newPage();  
+    const page = await browser.newPage();
     console.log('[DEBUG] Browser and page initialized');
 
     console.log('[DEBUG] Navigating to document URL');
@@ -194,6 +194,10 @@ app.post('/append', async (req: Request, res: Response) => {
         message: 'Content appended successfully',
         markdownContent
     });
+});
+
+app.get('/health', (req: Request, res: Response) => {
+    res.status(200).send('OK!');
 });
 
 app.listen(port, () => {
