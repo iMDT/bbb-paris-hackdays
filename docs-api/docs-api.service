@@ -1,0 +1,18 @@
+[Unit]
+Description=Docs Create API
+After=syslog.target network.target
+PartOf=bigbluebutton.target
+StartLimitIntervalSec=0
+
+[Service]
+WorkingDirectory=/usr/local/docs-api
+ExecStart=/usr/bin/node docs-api.js
+Restart=always
+SyslogIdentifier=docs-api
+User=bigbluebutton
+Group=bigbluebutton
+Environment=NODE_ENV=production
+RestartSec=1s
+
+[Install]
+WantedBy=multi-user.target bigbluebutton.target

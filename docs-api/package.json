@@ -3,21 +3,22 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/nodemon src/server.ts || npx ts-node src/server.ts"
+    "start": "./node_modules/.bin/nodemon src/server.ts || npx ts-node src/server.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+  },
+  "dependencies": {
     "@playwright/test": "^1.52.0",
     "@types/express": "^5.0.2",
     "@types/node": "^22.15.29",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
+    "typescript": "^5.8.3",
     "body-parser": "^2.2.0",
     "express": "^5.1.0"
   }
