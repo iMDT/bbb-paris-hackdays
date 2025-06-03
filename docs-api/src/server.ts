@@ -5,7 +5,9 @@ import fs from 'fs';
 
 const app = express();
 const port = 3099;
-const docsBaseUrl = 'https://docs-hackdays.h.elos.dev/docs/';
+const docsManagementBaseUrl = 'https://docs-hackdays.h.elos.dev/docs/';
+const docsAccessBaseUrl = 'https://docs-rp.bbb.imdt.dev/docs/';
+
 const docsUser = 'user';
 const docsPassword = 'user';
 const chromeUserDataDir = '/tmp/bbb-docs-api-chrome-userdata/';
@@ -31,7 +33,7 @@ app.post('/create', async (req: Request, res: Response) => {
 
     try {
         console.log('[DEBUG] Navigating to docs base URL');
-        await page.goto(docsBaseUrl);
+        await page.goto(docsManagementBaseUrl);
 
         console.log('[DEBUG] Waiting for "Start Writing" button');
         await page.waitForSelector('.c__button--primary');
@@ -80,7 +82,10 @@ app.post('/create', async (req: Request, res: Response) => {
         await page.locator('button[role="menuitem"]').last().click();
 
         const url = await page.url();
-        console.log('[DEBUG] Document created at:', url);
+
+        // Access URL is a special reverse-proxy that allows docs to be embeded into an iframe
+        const accessUrl = url.replace(docsManagementBaseUrl, docsAccessBaseUrl);
+        console.log('[DEBUG] Document created at:', accessUrl);
 
         await browser.close();
         console.log('[DEBUG] Browser closed');
@@ -88,7 +93,7 @@ app.post('/create', async (req: Request, res: Response) => {
         console.log(`[DEBUG] /create completed in ${Date.now() - start} ms`);
         res.status(201).json({
             message: 'Resource created successfully',
-            url
+            url: accessUrl
         });
     } catch(err) {
         const errorScreenshotPath = '/tmp/bbb-docs-error.png';
@@ -238,7 +243,7 @@ async function createBrowser() {
         locale: 'en-US',
     });
 
-    context.setDefaultTimeout(30000);
+    context.setDefaultTimeout(90000);
     console.log('[DEBUG] Browser context ready with extended timeout');
     return context;
 }
