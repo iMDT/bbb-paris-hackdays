@@ -12,6 +12,9 @@ interface GenericComponentLinkShareProps {
 function GenericComponentLinkShare(props: GenericComponentLinkShareProps): React.ReactElement {
   const { link, switchGenericContentArea, renderArea } = props;
 
+  let iconName = '';
+  if (renderArea === DOCS_AREA.SIDEKICK_AREA) iconName = 'presentation';
+
   const changeAreaButtonStyle: React.CSSProperties = {
     zIndex: 1000,
     position: 'absolute',
@@ -25,7 +28,7 @@ function GenericComponentLinkShare(props: GenericComponentLinkShareProps): React
 
   let tooltipButton;
   if (renderArea === DOCS_AREA.SIDEKICK_AREA) {
-    tooltipButton = 'Pin in main area';
+    tooltipButton = 'Pin to main area';
     changeAreaButtonStyle.top = 8;
     changeAreaButtonStyle.right = 8;
   } else {
@@ -53,11 +56,12 @@ function GenericComponentLinkShare(props: GenericComponentLinkShareProps): React
         onBlur={() => {}}
       >
         <ButtonIcon
-          size={18}
           currentArea={renderArea}
+          iconName={iconName}
         />
       </button>
       <Iframe
+        frameBorder={0}
         url={link}
         width="100%"
         height="100%"
