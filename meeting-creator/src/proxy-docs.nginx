@@ -1,0 +1,7 @@
+location /api/       { proxy_pass https://docs-hackdays.h.elos.dev/api/;  include proxy_params; }
+location /yws/       { proxy_pass https://docs-hackdays.h.elos.dev/yws/;  include proxy_params; }
+location /media/     { proxy_pass https://docs-hackdays.h.elos.dev/media/;  include proxy_params; }
+location /static/    { proxy_pass https://docs-hackdays.h.elos.dev/static/;  include proxy_params; }
+
+# frontend Next.js
+location /docs           { proxy_pass https://docs-hackdays.h.elos.dev/;   include proxy_params; }
