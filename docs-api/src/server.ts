@@ -2,13 +2,14 @@ import { test, expect, chromium } from '@playwright/test';
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import fs from 'fs';
+import config from 'config';
 
 const app = express();
-const port = 3099;
-const docsBaseUrl = 'https://docs-hackdays.h.elos.dev/docs/';
-const docsUser = 'user';
-const docsPassword = 'user';
-const chromeUserDataDir = '/tmp/bbb-docs-api-chrome-userdata/';
+const port = config.get<number>('port');
+const docsBaseUrl = config.get<string>('docsBaseUrl');
+const docsUser = config.get<string>('docsUser');
+const docsPassword = config.get<string>('docsPassword');
+const chromeUserDataDir = config.get<string>('chromeUserDataDir');
 
 if(!fs.existsSync(chromeUserDataDir)) {
     console.log('[DEBUG] Creating Chrome user data directory...');
@@ -115,7 +116,7 @@ app.post('/append', async (req: Request, res: Response) => {
 
     const start = Date.now();
     const browser = await createBrowser();
-    const page = await browser.newPage();  
+    const page = await browser.newPage();
     console.log('[DEBUG] Browser and page initialized');
 
     console.log('[DEBUG] Navigating to document URL');
@@ -193,6 +194,10 @@ app.post('/append', async (req: Request, res: Response) => {
         message: 'Content appended successfully',
         markdownContent
     });
+});
+
+app.get('/health', (req: Request, res: Response) => {
+    res.status(200).send('OK!');
 });
 
 app.listen(port, () => {
